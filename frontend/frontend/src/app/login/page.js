@@ -22,12 +22,12 @@ export default function LoginPage() {
         return;
       }
       // Save user info to localStorage or context
-      localStorage.setItem("user", JSON.stringify({ name: data.name, userId: data.userId }));
+      localStorage.setItem("user", JSON.stringify({ name: data.name, userId: data.userId, isAdmin: data.isAdmin }));
       alert("Login successful!");
       // Force the layout to refresh (re-run) and see the new user
         router.refresh();
       // Redirect to booking page
-      router.push("/book");
+      router.push("/");
     } catch (error) {
       console.error(error);
       alert("An error occurred.");

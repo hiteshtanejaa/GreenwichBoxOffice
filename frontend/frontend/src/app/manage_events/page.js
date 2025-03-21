@@ -7,13 +7,7 @@ export default function ManageEventsPage() {
   const router = useRouter();
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data))
-      .catch((err) => console.error("Error fetching events:", err));
-  }, []);
-
+  // Inline styles for simplicity
   const styles = {
     container: { padding: "1rem", fontFamily: "Arial, sans-serif" },
     button: {
@@ -28,31 +22,60 @@ export default function ManageEventsPage() {
     addButton: { backgroundColor: "#007bff", color: "white" },
     editButton: { backgroundColor: "#28a745", color: "white" },
     deleteButton: { backgroundColor: "#dc3545", color: "white" },
+    bookingsButton: { backgroundColor: "#6c757d", color: "white" },
     table: { width: "100%", borderCollapse: "collapse", marginTop: "20px" },
     th: { backgroundColor: "#f8f9fa", padding: "10px", border: "1px solid #dee2e6" },
     td: { padding: "10px", border: "1px solid #dee2e6", textAlign: "center" },
   };
 
+  useEffect(() => {
+    // 1. Check if a user is logged in and is an admin.
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      // If not logged in, redirect to the login page.
+      router.push("/login");
+      return;
+    }
+    const userObj = JSON.parse(storedUser);
+    if (!userObj.isAdmin) {
+      // If logged in but not an admin, redirect to home or show error.
+      router.push("/");
+      return;
+    }
+
+    // 2. Fetch events from the admin endpoint.
+    fetch("http://localhost:3000/api/admin/events")
+      .then((res) => res.json())
+      .then((data) => setEvents(data))
+      .catch((err) => console.error("Error fetching admin events:", err));
+  }, [router]);
+
+  // Handler for navigating to the event edit page.
   const handleEdit = (eventId) => {
-    // Navigate to the edit page for this event
     router.push(`/manage_events/${eventId}/edit`);
   };
 
-  // Dummy handler to delete an event (replace with real logic)
+  // Handler for navigating to the bookings page for a specific event.
+  const handleViewBookings = (eventId) => {
+    router.push(`/manage_events/${eventId}/bookings`);
+  };
+
+  // Dummy delete handler for demonstration.
   const handleDelete = (eventId) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       setEvents(events.filter((evt) => evt.EventID !== eventId));
-      // In real code, you'd also call your backend DELETE endpoint
+      // In a real implementation, you would also call the backend DELETE endpoint.
     }
   };
 
   return (
     <main style={styles.container}>
-      <h1>Manage Events</h1>
 
-      {/* Link to the new "Add Event" page */}
+      {/* Link to the "Add Event" page */}
       <Link href="/manage_events/add_event">
-        <button style={{ ...styles.button, ...styles.addButton }}>Add Event</button>
+        <button style={{ ...styles.button, ...styles.addButton }}>
+          Add Event
+        </button>
       </Link>
 
       <table style={styles.table}>
@@ -82,6 +105,12 @@ export default function ManageEventsPage() {
                   onClick={() => handleDelete(event.EventID)}
                 >
                   Delete
+                </button>
+                <button
+                  style={{ ...styles.button, ...styles.bookingsButton }}
+                  onClick={() => handleViewBookings(event.EventID)}
+                >
+                  View Bookings
                 </button>
               </td>
             </tr>

@@ -84,6 +84,11 @@ export default function RootLayout({ children }) {
                   </div>
                 </div>
               )}
+              {user && user.isAdmin && (
+                <Link href="/manage_events" className="px-3 py-2 hover:bg-gray-800 rounded">
+                  Manage Events
+                </Link>
+              )}
             </div>
           </div>
         </nav>

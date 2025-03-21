@@ -34,7 +34,7 @@ export default function EventDetailPage() {
       router.push("/register");
     } else {
       // user is logged in, proceed to booking page
-      router.push(`/book?performanceId=${performanceId}`);
+      router.push(`/book/${performanceId}`);
     }
   };
 
